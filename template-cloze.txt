@@ -1,0 +1,11 @@
+---
+id: cloze-example
+title: A Short Passage
+type: cloze
+source: 原文出处
+---
+She {{1}} [be] here. They arrived {{2}} noon.
+
+:::answers
+1: is
+2: at

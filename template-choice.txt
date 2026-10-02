@@ -1,0 +1,18 @@
+---
+id: reading-example
+title: A Short Passage
+type: choice
+source: 原文出处
+---
+She arrived at noon.
+
+:::question 1 / B
+When did she arrive?
+A: In the morning.
+B: At noon.
+C: At night.
+
+:::question 2 / A
+Who arrived?
+A: She did.
+B: Nobody did.

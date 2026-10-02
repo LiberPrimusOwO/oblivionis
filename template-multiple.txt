@@ -1,0 +1,10 @@
+---
+id: multiple-example
+title: Grammar Selection
+type: multiple
+source: 原文出处
+---
+[[1|She are here]]. [[2|They are ready]].
+
+:::answers
+1

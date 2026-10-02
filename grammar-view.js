@@ -5,16 +5,16 @@ function renderGrammarErrors(a){
   const passage=a.passage.split(/\n\s*\n/).map(paragraph=>{
     let html='',cursor=0;
     for(const match of paragraph.matchAll(/\[\[error-(\d+)\]\]/g)){
-      html+=esc(paragraph.slice(cursor,match.index));
+      html+=formatArticleText(paragraph.slice(cursor,match.index));
       const q=a.questions.find(q=>q.number===Number(match[1]));
       const checked=checkedFor(a,q),selected=!!selectedFor(a,q);
       const state=checked?(!checked.correct?'is-wrong':selected?'is-correct':''):selected?'is-selected':'';
-      html+=`<span class="grammar-error-option ${state}" role="checkbox" tabindex="${completed?'-1':'0'}" aria-checked="${selected}" aria-disabled="${completed}" aria-label="第 ${q.number} 项：${esc(q.prompt)}${checked?checked.correct?'，判断正确':'，判断错误':''}" data-error-qid="${q.id}"><span class="grammar-error-number" aria-hidden="true">${q.number}</span>${esc(q.prompt)}</span>`;
+      html+=`<span class="grammar-error-option ${state}" role="checkbox" tabindex="${completed?'-1':'0'}" aria-checked="${selected}" aria-disabled="${completed}" aria-label="第 ${q.number} 项：${esc(q.prompt)}${checked?checked.correct?'，判断正确':'，判断错误':''}" data-error-qid="${q.id}"><span class="grammar-error-number" aria-hidden="true">${q.number}</span>${formatArticleText(q.prompt)}</span>`;
       cursor=match.index+match[0].length;
     }
-    return `<p>${html+esc(paragraph.slice(cursor))}</p>`;
+    return `<p>${html+formatArticleText(paragraph.slice(cursor))}</p>`;
   }).join('');
-  return `<div class="reader-screen">${siteHeader('reader')}${breadcrumbs([{title:'英语题目',category:'english'},{title:a.title}])}<main class="reader-document"><div class="reader-toolbar"><span class="article-kind">语法错误辨析 / 多选</span></div><article class="reader-article"><h1 lang="en">${esc(a.title)}</h1><p class="grammar-instruction">选择有语法错误的标记部分。</p><div class="reader-rule" aria-hidden="true"></div><div class="reader-copy grammar-error-copy" lang="en">${passage}</div>${renderArticleSource(a)}</article><section class="check-zone" aria-label="作答与核对">${completed?`<div class="grammar-result" role="status"><p>${wrong?'已核对':'全部正确'} / ${selectedCorrect} 项选对</p><p>正确答案：1 / 8 / 11</p></div><button class="reset-link" data-action="reset">重新作答</button>`:`<button class="check-all-button" data-action="check">核对答案</button>`}</section></main></div>`;
+  return `<div class="reader-screen">${siteHeader('reader')}${breadcrumbs([{title:'英语题目',category:'english'},{title:a.title}])}<main class="reader-document"><div class="reader-toolbar"><span class="article-kind">语法错误辨析 / 多选</span></div><article class="reader-article"><h1 lang="en">${esc(a.title)}</h1><p class="grammar-instruction">选择有语法错误的标记部分。</p><div class="reader-rule" aria-hidden="true"></div><div class="reader-copy grammar-error-copy" lang="en">${passage}</div>${renderArticleSource(a)}</article><section class="check-zone" aria-label="作答与核对">${completed?`<div class="grammar-result" role="status"><p>${wrong?'已核对':'全部正确'} / ${selectedCorrect} 项选对</p><p>正确答案：${a.questions.filter(q=>q.answer).map(q=>q.number).join(' / ')}</p></div><button class="reset-link" data-action="reset">重新作答</button>`:`<button class="check-all-button" data-action="check">核对答案</button>`}</section></main></div>`;
 }
 function toggleGrammarError(qid){
   const a=articles.find(a=>a.id===activeId),q=a?.questions.find(q=>q.id===qid);

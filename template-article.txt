@@ -1,0 +1,10 @@
+---
+id: my-article-2026
+title: 文章标题
+type: article
+section: essays
+source: 作者，作品名，年份
+---
+这里开始写正文。
+
+空一行开始新段落。

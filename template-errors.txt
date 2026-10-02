@@ -1,0 +1,11 @@
+---
+id: errors-example
+title: Grammar in Context
+type: errors
+source: 原文出处
+---
+:::question 22 / B
+[[A|She]] [[B|are]] [[C|at home]].
+
+:::question 23 / A
+[[A|They is]] [[B|ready]] [[C|to leave]].
