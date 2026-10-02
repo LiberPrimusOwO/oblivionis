@@ -76,6 +76,7 @@ function renderArticleSource(a){
   return `<p class="article-source" lang="${a.sourceUrl?'ja':'en'}"><cite>${esc(a.source)}${a.sourceUrl?` <a href="${esc(a.sourceUrl)}" target="_blank" rel="noopener noreferrer">${esc(a.sourceUrl)}</a>`:''}</cite></p>`;
 }
 function renderReader(a){
+  if(a.type==='exam')return renderCompiledExam(a);
   if(a.type==='paragraph-errors')return renderParagraphErrors(a);
   if(a.type==='error-selection')return renderGrammarErrors(a);
   const checked=a.questions.map(q=>checkedFor(a,q));
@@ -85,6 +86,11 @@ function renderReader(a){
   const section=SECTIONS.find(s=>s.id===(a.section||'english'))||SECTIONS[0];
   const types=a.type==='article'?'文章 / Article':[a.questions.some(q=>q.type==='text')?t("语法填空"):'',a.questions.some(q=>q.type!=='text')?t("阅读选择"):''].filter(Boolean).join(' / ');
   return `<div class="reader-screen">${siteHeader(section.id)}${breadcrumbs([{title:section.name,category:section.id},{title:a.title}])}<main class="reader-document"><div class="reader-toolbar"><span class="article-kind">${types}</span></div><article class="reader-article"><h1 lang="${esc(a.lang||'en')}">${esc(a.title)}</h1><div class="reader-rule" aria-hidden="true"></div><div class="reader-copy" lang="${esc(a.lang||'en')}">${passage.html}</div>${renderArticleSource(a)}</article><section class="questions-section" aria-label="${t("作答与核对")}">${remaining.length?`<h2 class="questions-heading">${remaining.every(q=>q.type!=='text')?t("阅读理解"):t("练习")}</h2>${remaining.map((q,qi)=>renderQuestion(a,q,qi)).join('')}`:''}<div class="check-zone">${!a.questions.length?'':completed?`<div class="result-line" role="status">${correct} / ${a.questions.length}<small>${t("答对")}</small></div><button class="reset-link" data-action="reset">${t("重新作答")}</button>`:`<button class="check-all-button" data-action="check" ${allSelected(a)?'':'disabled'}>${t("核对答案")}</button>`}</div></section></main></div>`;
+}
+function renderCompiledExam(a){
+  const section=SECTIONS.find(s=>s.id===a.section);
+  const paragraphs=text=>text.split(/\n\s*\n/).filter(p=>p.trim()).map(p=>`<p>${formatArticleText(p)}</p>`).join('');
+  return `<div class="reader-screen">${siteHeader(section.id)}${breadcrumbs([{title:section.name,category:section.id},{title:a.title}])}<main class="reader-document exam-document" lang="${esc(a.lang)}"><header class="exam-header"><p class="article-kind">${esc(section.name)} / 试卷</p><h1>${esc(a.title)}</h1></header><nav class="exam-navigation" aria-label="试题导航">${a.problems.map(p=>`<a href="#exam-question-${p.number}">第 ${p.number} 题</a>`).join('')}</nav><div class="exam-copy">${a.problems.map(p=>`<article class="exam-problem" id="exam-question-${p.number}"><header class="exam-problem-heading"><h2>第 ${p.number} 题</h2></header>${paragraphs(p.introduction)}${p.parts.map(s=>`<section class="exam-part"><h3>${esc(s.label)}</h3>${paragraphs(s.text)}${s.answer===null?'':`<details class="exam-answers"><summary><span>参考答案</span><svg class="answer-toggle" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false"><path d="M4 10H16"/><path class="toggle-vertical" d="M10 4V16"/></svg></summary><div class="exam-answer-content">${paragraphs(s.answer)}</div></details>`}</section>`).join('')}</article>`).join('')}</div>${renderArticleSource(a)}</main></div>`;
 }
 function renderQuestion(a,q,qi){
   const c=checkedFor(a,q),s=selectedFor(a,q);

@@ -8,7 +8,7 @@ import shutil
 import sys
 from pathlib import Path
 
-TYPES = {'article', 'cloze', 'choice', 'errors', 'multiple'}
+TYPES = {'article', 'cloze', 'choice', 'errors', 'multiple', 'exam'}
 SECTIONS = {'english', 'essays', 'notes', 'papers', 'physics', 'math'}
 FIELDS = {'id', 'title', 'type', 'section', 'source', 'source_url', 'order', 'lang'}
 INLINE = re.compile(r'\[\[([^|\]\n]+)\|([^\]\n]+)\]\]')
@@ -67,6 +67,50 @@ def check_text(text):
         require(text[tokens[i].end():tokens[i + 1].start()].strip(), 'LaTeX 公式不能为空')
         i += 2
 
+def exam_blocks(body):
+    problems = []
+    problem = part = None
+    target = None
+    for line in body.splitlines():
+        if line.startswith(':::problem'):
+            m = re.fullmatch(r':::problem ([1-9]\d*)', line)
+            require(m, '大题开头写成 :::problem 1')
+            problem = {'number': int(m[1]), 'introduction': [], 'parts': []}
+            problems.append(problem)
+            part = None
+            target = problem['introduction']
+        elif line.startswith(':::part'):
+            m = re.fullmatch(r':::part (\S.+|\S)', line)
+            require(problem is not None and m, '小题开头写成 :::part （1），且必须位于大题中')
+            part = {'label': m[1], 'text': [], 'answer': None}
+            problem['parts'].append(part)
+            target = part['text']
+        elif line == ':::answer':
+            require(part is not None and part['answer'] is None, '答案必须位于小题中，且不可重复')
+            part['answer'] = []
+            target = part['answer']
+        else:
+            require(not line.startswith(':::'), '未知试卷区块指令')
+            require(target is not None or not line.strip(), '试卷正文必须以 :::problem 开始')
+            if target is not None:
+                target.append(line)
+    require(problems, '试卷没有大题')
+    require([p['number'] for p in problems] == list(range(1, len(problems) + 1)), '大题必须从 1 开始连续编号')
+    for p in problems:
+        p['introduction'] = '\n'.join(p['introduction']).strip()
+        require(p['parts'], f"第 {p['number']} 题没有小题")
+        require(len({s['label'] for s in p['parts']}) == len(p['parts']), '小题标记重复')
+        for s in p['parts']:
+            s['text'] = '\n'.join(s['text']).strip()
+            require(s['text'], '小题题干不能为空')
+            if s['answer'] is not None:
+                s['answer'] = '\n'.join(s['answer']).strip()
+                require(s['answer'], '答案区块不能为空；证明题请省略 :::answer')
+            for value in (s['text'], s['answer'] or ''):
+                check_text(value)
+        check_text(p['introduction'])
+    return problems
+
 def parse_article(text, filename='article.article'):
     lines = text.lstrip('\ufeff').replace('\r\n', '\n').splitlines()
     require(lines and lines[0] == '---', '文件必须以 --- 元信息区块开始')
@@ -87,10 +131,11 @@ def parse_article(text, filename='article.article'):
     for key in ('id', 'title', 'type'):
         require(meta.get(key), f'缺少 {key}')
     require(re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', meta['id']), 'id 只能含小写英文字母、数字、单个连字符')
-    require(meta['type'] in TYPES, 'type 必须是 article / cloze / choice / errors / multiple')
+    require(meta['type'] in TYPES, 'type 必须是 article / cloze / choice / errors / multiple / exam')
     section = meta.get('section', 'english')
     require(section in SECTIONS, 'section 必须是 english / essays / notes / papers / physics / math')
-    require(meta['type'] == 'article' or section == 'english', '练习题目前放在 english 板块')
+    require(meta['type'] in {'article', 'exam'} or section == 'english', '英语练习题放在 english 板块')
+    require(meta['type'] != 'exam' or section in {'math', 'physics'}, 'exam 放在 math 或 physics 板块')
     lang = meta.get('lang', 'en' if section == 'english' else 'zh-CN')
     require(lang in {'en', 'zh-CN', 'ja'}, 'lang 必须是 en / zh-CN / ja')
     if meta.get('source_url'):
@@ -104,7 +149,10 @@ def parse_article(text, filename='article.article'):
          'source': meta.get('source', ''), 'sourceUrl': meta.get('source_url', ''),
          'order': int(order), 'questions': [], 'passage': ''}
     kind = meta['type']
-    if kind == 'article':
+    if kind == 'exam':
+        a['type'] = 'exam'
+        a['problems'] = exam_blocks(body)
+    elif kind == 'article':
         a['type'] = 'article'
         a['passage'] = body
         require(not any(x in body for x in ('[[', ']]', '{{', '}}')), '纯文章不能包含题目标记')

@@ -5,8 +5,8 @@
 .exam-resources a{color:var(--blue);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:5px}
 .exam-resources a:hover{border-color:var(--blue)}
 .exam-navigation{display:flex;flex-wrap:wrap;gap:34px;border-top:1px solid var(--line);border-bottom:1px solid var(--blue);margin:36px 0 0;padding:15px 0}
-.exam-navigation button{border:0;background:none;padding:5px 0;color:var(--ink);font-family:var(--serif);font-size:.95rem}
-.exam-navigation button:hover{color:var(--blue)}
+.exam-navigation button,.exam-navigation a{border:0;background:none;padding:5px 0;color:var(--ink);font-family:var(--serif);font-size:.95rem;text-decoration:none}
+.exam-navigation button:hover,.exam-navigation a:hover{color:var(--blue)}
 .exam-copy{font-family:var(--serif);font-size:1.0625rem;line-height:2.15;color:#244b60;overflow-wrap:break-word}
 .exam-problem{padding-top:48px;scroll-margin-top:24px}
 .exam-problem+.exam-problem{border-top:1px solid var(--blue);margin-top:72px}

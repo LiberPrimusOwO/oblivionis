@@ -8,6 +8,13 @@ def source(kind, body, extra=''):
     return f'---\nid: test-article\ntitle: Test\ntype: {kind}\n{extra}---\n{body}'
 
 class CompilerTests(unittest.TestCase):
+    def test_exam_optional_proof_answers(self):
+        a=parse_article(source('exam',':::problem 1\n设 $x$ 为实数。\n:::part （1）\n求 $x$。\n:::answer\n$x=1$\n:::part （2）\n证明 $x>0$。', 'section: math\n'))
+        self.assertEqual(a['problems'][0]['parts'][0]['answer'], '$x=1$')
+        self.assertIsNone(a['problems'][0]['parts'][1]['answer'])
+        for body in (':::problem 2\n:::part （1）\n题干', ':::answer\n答案', ':::problem 1\n:::part （1）\n题干\n:::answer', ':::problem 1\n:::part （1）\n$未闭合'):
+            with self.subTest(body=body),self.assertRaises(CompileError):
+                parse_article(source('exam',body,'section: math\n'))
     def test_article_text_and_source(self):
         a=parse_article(source('article','日本語の文章。\n\n$E=mc^2$', 'section: papers\nsource: 出典\n'))
         self.assertEqual(a['section'],'papers');self.assertEqual(a['source'],'出典')

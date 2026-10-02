@@ -20,7 +20,7 @@ source: 作者，作品名，年份
 - `id`、`title`、`type` 必填。字段与内容用英文冒号 `:` 分隔。
 - `id` 是文章的固定编号，仅使用小写字母、数字和连字符；不同文章不能重复。修改文章时保留原 `id`，覆盖同一个源文件。
 - `title` 为页面标题；`source` 为文末浅灰色、斜体、右对齐出处，可省略。
-- `section` 可选：`english` 英语 / `papers` 论文 / `physics` 物理 / `math` 数学 / `essays` 随笔 / `notes` 笔记。省略时为 `english`。练习题使用 `english`；其他板块当前支持普通文章及公式，不是物理试卷的图文结构。
+- `section` 可选：`english` 英语 / `papers` 论文 / `physics` 物理 / `math` 数学 / `essays` 随笔 / `notes` 笔记。省略时为 `english`。英语练习题使用 `english`；数学、物理试卷使用 `exam`，其他文章使用 `article`。
 - `source_url` 可选：出处的完整 `https://...` 链接，需同时填写 `source`。
 - `order` 可选：非负整数，上传文章之间按该数字排序，再按 `id` 排序。默认 `1000`；网站原有文章在前。
 - `lang` 可选：`en` / `zh-CN` / `ja`；英语板块默认 `en`，其他默认 `zh-CN`。
@@ -117,6 +117,29 @@ source: 原文出处
 ```
 
 例如答案为 1、8、11，写 `1 8 11`。不使用逗号或斜杠。文章会显示可选择的浅灰框。
+
+## 6. 数学、物理试卷：`exam`
+
+设置 `type: exam`、`section: math` 或 `section: physics`。大题用 `:::problem 1` 从 1 开始连续编号，小题用 `:::part （1）`，答案用 `:::answer`。证明题省略答案区块，页面也不会出现答案按钮。正文中的公式仍使用 `$...$` 或 `$$...$$`。
+
+```text
+---
+id: math-example
+title: 数学试卷
+type: exam
+section: math
+---
+:::problem 1
+设 $x$ 为实数。
+:::part （1）
+求 $x$。
+:::answer
+$x=1$
+:::part （2）
+证明 $x>0$。
+```
+
+本类型支持题干、公式与可折叠答案；不上传 PDF，也不自动生成图形。
 
 ## 上传、修改与删除
 

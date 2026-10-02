@@ -1,0 +1,115 @@
+---
+id: tokyo-2026-math
+title: 东京大学 2026 数学
+type: exam
+section: math
+lang: zh-CN
+---
+:::problem 1
+:::part （1）
+设
+
+$$f(\theta)=\sin\theta-\theta+\frac{\theta^3}{6}.$$
+
+求 $f(\theta)$ 在 $[-1,1]$ 上的最大值 $M$ 和最小值 $m$。
+:::answer
+$$M=\sin1-\frac56,\qquad m=-\sin1+\frac56.$$
+
+:::part （2）
+证明：
+
+$$\frac78\pi\leq \int_0^{2\pi}\sin(\cos x-x)\,dx\leq \frac78\pi+4M.$$
+
+:::problem 2
+设 $n$ 为正整数，从
+
+$$\{(x,y)\mid x,y\in\mathbb Z,\ 1\le x\le3,\ 1\le y\le n\}$$
+
+中等可能地任取 $3$ 个不同的点，记这 $3$ 点能构成三角形的概率为 $p_n$。
+
+:::part （1）
+求 $p_5$。
+:::answer
+$$p_5=\frac{412}{455}.$$
+
+:::part （2）
+设 $m\ge2$ 为整数，求 $p_{2m}$。
+:::answer
+$$p_{2m}=\frac{m(16m-7)}{(6m-1)(3m-1)}.$$
+
+:::problem 3
+设 $S$ 为以原点为球心、$5$ 为半径的球面。球面 $S$ 上互不相同的三点 $P,Q,R$ 满足：$P,Q$ 在 $xy$ 平面内，且三角形 $PQR$ 的重心为 $G(2,0,1)$。
+
+:::part （1）
+在 $xy$ 平面内作出线段 $PQ$ 中点 $M$ 的轨迹。
+:::answer
+$$(x-3)^2+y^2=4,\qquad (x,y)\ne(5,0).$$
+
+:::part （2）
+在 $xy$ 平面内作出线段 $PQ$ 扫过的区域。
+:::answer
+$$\begin{cases}
+x^2+y^2\le25,\\[2mm]
+\dfrac{(x-3)^2}{4}-\dfrac{y^2}{5}\le1,\\[2mm]
+(x,y)\ne(5,0).
+\end{cases}$$
+
+:::problem 4
+设 $k$ 为实数，曲线
+
+$$C:y=x^3-kx.$$
+
+假设原点 $O$ 与曲线 $C$ 上两点 $P,Q$ 两两不同，且 $C$ 在 $O,P,Q$ 处的三条切线两两相交，夹角均为
+
+$$\theta=\frac{\pi}{3}\qquad\left(0\le\theta\le\frac{\pi}{2}\right),$$
+
+则称 $P,Q$ 满足条件 $S$。
+
+:::part （1）
+求存在满足条件 $S$ 的 $P,Q$ 时，$k$ 的取值范围。
+:::answer
+$$k>\frac1{\sqrt3}.$$
+
+:::part （2）
+设 $k$ 在（1）所求范围内。记上述三条切线围成的三角形面积为 $S_0$，其最大值、最小值分别为 $M,m$。若 $M=4m$，求 $k$ 的值。
+:::answer
+$$k=\frac{5\sqrt3}{12}.$$
+
+:::problem 5
+在复平面内，设 $C$ 为单位圆。对 $C$ 上的点 $P(z)$，令
+
+$$w=(z-a)^3,$$
+
+点 $Q(w)$ 的轨迹记为 $D$。
+
+:::part （1）
+当 $a=-3$ 时，设 $w$ 的辐角为 $\theta$，求 $\sin\theta$ 的取值范围。
+:::answer
+$$-\frac{23}{27}\le\sin\theta\le\frac{23}{27}.$$
+
+:::part （2）
+若 $D$ 与实轴的正、负半轴均有公共点，求点 $R(a)$ 所能到达区域的面积。
+:::answer
+$$4\sqrt3.$$
+
+:::problem 6
+设 $n$ 为正整数。记 $n$ 的正因数中除以 $3$ 余 $1$、余 $2$ 的个数分别为 $f(n),g(n)$。
+
+:::part （1）
+求 $f(2800),g(2800)$。
+:::answer
+$$f(2800)=28,\qquad g(2800)=14.$$
+
+:::part （2）
+证明：
+
+$$f(n)\ge g(n).$$
+
+:::part （3）
+若
+
+$$g(n)=15,$$
+
+求 $f(n)$ 的所有可能值。
+:::answer
+$$f(n)=15,16,18,20,30.$$

@@ -11,6 +11,10 @@ samples={
 'errors':':::question 22 / B\\n[[A|He]] [[B|are]] here.',
 'multiple':'[[1|He is]] here. [[2|She are]] there.\\n:::answers\\n2'}
 print(json.dumps([parse_article('---\\nid: sample-'+k+'\\ntitle: Sample\\ntype: '+k+'\\nsection: '+('papers' if k=='article' else 'english')+'\\n---\\n'+v) for k,v in samples.items()]))`],{cwd:root,encoding:'utf8'}));
+if(fs.existsSync(path.join(root,'tokyo-2026-math.article')))data.push(JSON.parse(execFileSync('python3',['-c',`import json
+from pathlib import Path
+from compiler import parse_article
+print(json.dumps(parse_article(Path('tokyo-2026-math.article').read_text())))`],{cwd:root,encoding:'utf8'})));
 const storage=new Map();
 storage.set('oblivionis_articles_v4',JSON.stringify([{...data[0],revision:'old'},{id:'removed-source',questions:[]}]));
 storage.set('oblivionis_answers_v4',JSON.stringify({'sample-article:q1':{correct:true}}));
@@ -31,6 +35,14 @@ for(const a of data){
   context.targetId=a.id;
   const html=vm.runInContext('renderReader(articles.find(a=>a.id===targetId))',context);
   assert(!html.includes('undefined'),a.id);
+  if(a.type==='exam'){
+    assert.equal(a.problems.length,6);
+    assert.equal((html.match(/<details class="exam-answers">/g)||[]).length,11);
+    assert.equal(a.problems[0].parts[1].answer,null);
+    assert.equal(a.problems[5].parts[1].answer,null);
+    assert(!html.includes('math-error'));assert(html.includes('katex'));
+    assert(!html.includes('t01-21a.pdf'));assert(html.includes('data-category="math"'));
+  }
   if(a.type==='article'){assert(html.includes('katex'));assert(!html.includes('data-action="check"'));assert(html.includes('data-category="papers"'));}
   if(a.type==='error-selection'){
     assert(html.includes('role="checkbox"'));
@@ -43,4 +55,4 @@ for(const a of data){
   }
 }
 assert(vm.runInContext("renderEnglishLibrary().includes('正文。')",context)===false);
-console.log('网站接入检查通过：五种题型、公式、动态多选答案、更新与删除同步');
+console.log('网站接入检查通过：英语题型、试卷、证明题隐藏答案、公式、更新与删除同步');
