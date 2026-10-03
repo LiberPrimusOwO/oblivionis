@@ -31,7 +31,9 @@ function render(resetScroll=true){
   const research=currentSection==='papers'?RESEARCH_PAPERS.find(x=>x.id===activeId):null;
   const paper=currentSection==='physics'&&typeof PHYSICS_PAPERS!=='undefined'?PHYSICS_PAPERS.find(x=>x.id===activeId):null;
   document.getElementById('app').innerHTML=research?renderResearchPaper(research):paper?renderPhysicsExam(paper):(a?renderReader(a):(currentSection==='categories'?renderCategories():renderSection(currentSection)));
+  if(resetScroll)syncNavigation();
   bind();
+  bindNavigation();
   if(resetScroll)window.scrollTo({top:0,behavior:'instant'});
   else requestAnimationFrame(()=>window.scrollTo({top:scrollY,behavior:'instant'}));
 }
@@ -100,7 +102,7 @@ function renderQuestion(a,q,qi){
     const sentence=match?`${esc(q.prompt.slice(0,match.index))}${renderInlineAnswer(a,q,number)}${esc(q.prompt.slice(match.index+match[0].length))}`:`${esc(q.prompt)} ${renderInlineAnswer(a,q,number)}`;
     return `<div class="question-block"><div class="sentence-question" lang="en">${sentence}</div></div>`;
   }
-  return `<div class="question-block"><div class="question-number">${String(qi+1).padStart(2,'0')}</div><h2 id="question-${esc(q.id)}" lang="en">${esc(q.prompt)}</h2><div class="answer-list" role="radiogroup" aria-labelledby="question-${esc(q.id)}">${(q.options||[]).map((o,oi)=>{
+  return `<div class="question-block" data-route-question="${q.number||qi+1}"><div class="question-number">${String(q.number||qi+1).padStart(2,'0')}</div><h2 id="question-${esc(q.id)}" lang="en">${esc(q.prompt)}</h2><div class="answer-list" role="radiogroup" aria-labelledby="question-${esc(q.id)}">${(q.options||[]).map((o,oi)=>{
     const cls=['answer-row',s===oi?'selected':'',c&&oi===q.answer?'correct-option':'',c&&s===oi&&!c.correct?'wrong-option':''].filter(Boolean).join(' ');
     return `<label class="${cls}"><input class="answer-radio" type="radio" name="choice-${esc(q.id)}" data-choice="${oi}" data-qid="${esc(q.id)}" value="${oi}" ${s===oi?'checked':''} ${c?'disabled':''}><span class="answer-letter">${LETTERS[oi]||oi+1}</span><span class="answer-text" lang="en">${esc(o)}</span><span class="answer-mark">${c&&oi===q.answer?'✓':''}</span></label>`;
   }).join('')}</div>${c?`<div class="inline-feedback ${c.correct?'correct':'wrong'}">${c.correct?'✓ '+t('正确'):`${t("正确答案")}：${LETTERS[q.answer]||q.answer}`}</div>`:''}</div>`;
@@ -129,7 +131,7 @@ function bind(){
 
 function action(name){
   if(name==='home'){activeId='';currentSection='categories';render();return}
-  if(name==='back'){if(activeId){activeId='';if(!['physics','papers'].includes(currentSection))currentSection='english'}else{currentSection='categories'}render();return}
+  if(name==='back'){backInArchive();return}
   if(name==='check'){const a=articles.find(x=>x.id===activeId);if(a?.type==='error-selection')checkGrammarErrors(a);else checkAll();return}
   if(name==='reset'){
     Object.keys(answers).forEach(k=>{if(k.startsWith(activeId+':'))delete answers[k]});
@@ -248,4 +250,4 @@ function bindParagraphErrors(){
   });
 }
 
-render();
+initializeNavigation();

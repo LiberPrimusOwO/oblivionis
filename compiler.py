@@ -6,6 +6,7 @@ import json
 import re
 import shutil
 import sys
+import subprocess
 from pathlib import Path
 
 TYPES = {'article', 'cloze', 'choice', 'errors', 'multiple', 'exam'}
@@ -246,6 +247,8 @@ def build(root, target, articles):
         return m[0]
     index = re.sub(r'((?:src|href)="\./)([^"?]+\.(?:js|css))(?:\?[^" ]*)?(")', version, index)
     (target / 'index.html').write_text(index, encoding='utf-8')
+    if (root / 'build-routes.cjs').exists():
+        subprocess.run(['node', str((root / 'build-routes.cjs').resolve()), str(target.resolve())], check=True)
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)

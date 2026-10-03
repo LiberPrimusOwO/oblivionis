@@ -24,7 +24,7 @@ const context=vm.createContext({COMPILED_ARTICLES:data,console,crypto:{},katex:r
   window:{},document:{},RESEARCH_PAPERS:[],PHYSICS_PAPERS:[]});
 for(const name of ['physics-view.js','grammar-data.js','grammar-view.js','app.js']){
   let code=fs.readFileSync(path.join(root,name),'utf8');
-  if(name==='app.js')code=code.replace(/render\(\);\s*$/,'');
+  if(name==='app.js')code=code.replace(/initializeNavigation\(\);\s*$/,'');
   vm.runInContext(code,context,{filename:name});
 }
 vm.runInContext(`
@@ -56,3 +56,4 @@ for(const a of data){
 }
 assert(vm.runInContext("renderEnglishLibrary().includes('正文。')",context)===false);
 console.log('网站接入检查通过：英语题型、试卷、证明题隐藏答案、公式、更新与删除同步');
+if(fs.existsSync(path.join(root,'_site/navigation.js')))execFileSync('node',[path.join(root,'test-navigation.cjs'),path.join(root,'_site')],{stdio:'inherit'});

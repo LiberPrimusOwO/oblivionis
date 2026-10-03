@@ -1,0 +1,18 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const target=process.argv[2]||__dirname;
+const events={},nodes={},stack=[{path:'/math/01/06',state:null}];let pointer=0;
+const location={pathname:stack[0].path,hash:''};
+const history={get state(){return stack[pointer].state},replaceState(s,_,p){stack[pointer]={state:s,path:p||location.pathname};location.pathname=stack[pointer].path},pushState(s,_,p){stack.splice(++pointer);stack.push({state:s,path:p});location.pathname=p},back(){if(pointer){pointer--;location.pathname=stack[pointer].path;events.popstate()}}};
+const ctx=vm.createContext({console,crypto:{},localStorage:{getItem:()=>null,setItem:()=>{}},location,history,performance:{now:()=>200},getComputedStyle:()=>({overflowX:'visible'}),window:{scrollY:0,scrollTo:()=>{},addEventListener:(k,f)=>events[k]=f},document:{body:{},getElementById:id=>nodes[id],querySelector:()=>null,querySelectorAll:()=>[],addEventListener:(k,f)=>events[k]=f}});
+for(const name of ['physics-data.js','papers-data.js','grammar-data.js','compiled-articles.js','navigation.js','app.js'])vm.runInContext(fs.readFileSync(target+'/'+name,'utf8').replace(/initializeNavigation\(\);\s*$/,''),ctx);
+let scrolled='';nodes['exam-question-6']={scrollIntoView:()=>scrolled='six'};
+vm.runInContext('render=()=>{};initializeNavigation()',ctx);
+assert.equal(vm.runInContext('activeId',ctx),'tokyo-2026-math');assert.equal(scrolled,'six');
+vm.runInContext('backInArchive()',ctx);assert.equal(location.pathname,'/math/01');
+vm.runInContext("activeId='';syncNavigation()",ctx);assert.equal(location.pathname,'/math');history.back();assert.equal(vm.runInContext('activeId',ctx),'tokyo-2026-math');
+assert(vm.runInContext('isBackSwipe({x:40,y:50,time:0},{x:160,y:60,time:300})',ctx));
+assert(!vm.runInContext('isBackSwipe({x:40,y:50,time:0},{x:160,y:150,time:300})',ctx));
+assert(!vm.runInContext('isBackSwipe({x:160,y:50,time:0},{x:40,y:60,time:300})',ctx));
+const fresh=vm.runInContext("articles.find(a=>a.id==='conflicting-views')",ctx);assert.deepEqual(Array.from(fresh.questions,q=>q.answer),[2,3,1,0]);assert.deepEqual(Array.from(fresh.questions,q=>q.number),[31,32,33,34]);
+assert(fs.existsSync(target+'/math/01/06/index.html'));assert(fs.existsSync(target+'/english/07/31/index.html'));
+console.log('通过：深层链接、题目定位、直接进入后返回、浏览器返回、手势方向过滤、阅读题答案和静态路径');
