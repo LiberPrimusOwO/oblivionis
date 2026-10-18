@@ -22,7 +22,7 @@ storage.set('oblivionis_compiled_ids_v1',JSON.stringify(['sample-article','remov
 const context=vm.createContext({COMPILED_ARTICLES:data,console,crypto:{},katex:require('./vendor--katex--katex.min.js'),
   localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},
   window:{},document:{},RESEARCH_PAPERS:[],PHYSICS_PAPERS:[]});
-for(const name of ['physics-view.js','grammar-data.js','grammar-view.js','app.js']){
+for(const name of ['physics-data.js','physics-view.js','grammar-data.js','grammar-view.js','app.js']){
   let code=fs.readFileSync(path.join(root,name),'utf8');
   if(name==='app.js')code=code.replace(/initializeNavigation\(\);\s*$/,'');
   vm.runInContext(code,context,{filename:name});
@@ -57,3 +57,14 @@ for(const a of data){
 assert(vm.runInContext("renderEnglishLibrary().includes('正文。')",context)===false);
 console.log('网站接入检查通过：英语题型、试卷、证明题隐藏答案、公式、更新与删除同步');
 if(fs.existsSync(path.join(root,'_site/navigation.js')))execFileSync('node',[path.join(root,'test-navigation.cjs'),path.join(root,'_site')],{stdio:'inherit'});
+
+const textbook=vm.runInContext("PHYSICS_PAPERS.find(p=>p.id==='textbook-physics-exercises')",context);
+assert(textbook);assert.equal(textbook.problems.length,5);
+const textbookHtml=vm.runInContext("renderPhysicsExam(PHYSICS_PAPERS.find(p=>p.id==='textbook-physics-exercises'))",context);
+assert.equal((textbookHtml.match(/<details class="exam-answers">/g)||[]).length,11);
+assert(!textbookHtml.includes('math-error'));assert(!textbookHtml.includes('undefined'));
+const figures=vm.runInContext("Object.entries(PHYSICS_IMAGES).filter(([id])=>id.startsWith('textbook-'))",context);
+assert.equal(figures.length,4);
+for(const [id,asset] of figures){assert(fs.existsSync(path.join(root,asset.file)),id);assert(/^physic-p1-q[2-5](?:-answer)?\.svg$/.test(asset.file));}
+assert(vm.runInContext("renderPhysicsLibrary().includes('课本习题集')",context));
+console.log('课本习题集检查通过：5 道大题、11 组答案、4 张 SVG、公式与配图链接');

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1057" height="1000" viewBox="0 0 1057 1000" role="img" aria-labelledby="svg-title svg-desc">
+  <title id="svg-title">台車の上のおもりをロープで斜めに引く図</title>
+  <desc id="svg-desc">水平な地面に車輪の付いた台車があり、その上のおもりにつながったロープが右上に伸び、水平線との間の角度がθで示されている。</desc>
+  <defs>
+    <pattern id="ground-hatch" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="skewX(-30)">
+      <path d="M 0 0 V 18" stroke="#777" stroke-width="2.3"/>
+    </pattern>
+  </defs>
+
+  <rect width="1057" height="1000" fill="#fff"/>
+
+  <!-- The ground: one horizontal upper edge and diagonal hatching below. -->
+  <path d="M 58 767 H 1008" fill="none" stroke="#575757" stroke-width="4" stroke-linecap="square"/>
+  <path d="M 58 771 H 1008 V 846 H 58 Z" fill="url(#ground-hatch)"/>
+
+  <!-- Cart wheels, drawn behind the cart body. -->
+  <circle cx="262" cy="741" r="27.5" fill="#fff" stroke="#666" stroke-width="4"/>
+  <circle cx="674" cy="741" r="27.5" fill="#fff" stroke="#666" stroke-width="4"/>
+
+  <!-- Lower cart body. -->
+  <rect x="158" y="582" width="618" height="131" fill="#fff" stroke="#646464" stroke-width="4"/>
+
+  <!-- Mass on the cart: low, round-shouldered outline. -->
+  <path d="M 205 582 L 205 550
+           C 205 525, 217 507, 245 507
+           L 682 507
+           C 710 507, 724 525, 724 551
+           L 724 582"
+        fill="#fff" stroke="#666" stroke-width="3.5" stroke-linejoin="round"/>
+
+  <!-- Horizontal reference segment for θ. -->
+  <path d="M 470 490 H 688" stroke="#777" stroke-width="3" fill="none"/>
+
+  <!-- Rope rising to the upper right. -->
+  <path d="M 477 490 L 967 214" stroke="#202020" stroke-width="4.1" fill="none" stroke-linecap="round"/>
+
+  <!-- Attachment loop at the mass. -->
+  <circle cx="465" cy="493" r="17" fill="#fff" stroke="#666" stroke-width="3.5"/>
+
+  <!-- Angle arc about the rope attachment, from horizontal to the rope. -->
+  <path d="M 608 490 A 131 131 0 0 0 591.2 425.7" stroke="#666" stroke-width="3.2" fill="none"/>
+
+  <!-- Japanese labels. -->
+  <g fill="#555" font-family="'Noto Serif CJK JP', 'Hiragino Mincho ProN', 'Yu Mincho', 'IPAexMincho', serif">
+    <text x="684" y="267" font-size="50" letter-spacing="3">ロープ</text>
+    <text x="358" y="568" font-size="51" letter-spacing="5">おもり</text>
+    <text x="391" y="667" font-size="54" letter-spacing="6">台車</text>
+    <text x="623" y="483" font-size="51" font-style="italic" letter-spacing="0">θ</text>
+  </g>
+</svg>
